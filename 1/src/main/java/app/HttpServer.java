@@ -43,7 +43,7 @@ public class HttpServer {
             String outputLine;
             boolean firstline = true;
             String reqPath = "";
-
+            Map<String, String> reqParams = new HashMap<>();
             while ((inputLine = in.readLine()) != null) {
                 System.out.println("Received: " + inputLine);
                 if (firstline) {
@@ -53,7 +53,12 @@ public class HttpServer {
                     String protocol = firstLineTokens[2];
                     URI requri = new URI(srturi);
                     reqPath = requri.getPath();
+
+                    String query = requri.getQuery();
+                    reqParams = queryParams(query);
+
                     System.out.println("Path: " + reqPath);
+                    System.out.println("Query params: " + reqParams);
                     firstline = false;
                 }
                 if (!in.ready()) {
@@ -62,7 +67,7 @@ public class HttpServer {
             }
             
 
-            HttpRequest req = new HttpRequest();
+            HttpRequest req = new HttpRequest(reqParams);
             HttpResponse res = new HttpResponse();
             
             WebMethod wm = endPoints.get(reqPath);

@@ -10,6 +10,6 @@ public class HttpRequest {
     }
 
     public String getValues(String varname){
-        return queryParams.getOrDefault(varname, "default");
+        return queryParams.getOrDefault(varname, "");
     }
 }

@@ -9,8 +9,16 @@ import app.HttpServer;
 public class MathServices {
     public static void main (String[] args) throws IOException, URISyntaxException{
         HttpServer.get("/pi", (req,res) -> "PI= " + Math.PI);
-        HttpServer.get("/hello", (req,res) -> "Hello World" );
         HttpServer.get("/euler", (req,res)-> euler());
+        HttpServer.get("/hello", (req,res) -> {
+            String name = req.getValues("name");
+            if(name.isEmpty()){
+                return "Hello World!";
+            } else {
+                return "Hello " + name;
+            }
+        });
+
         HttpServer.main(args);
     }
     public static String euler(){
