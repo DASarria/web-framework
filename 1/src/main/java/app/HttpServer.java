@@ -109,4 +109,21 @@ public class HttpServer {
     public static void get(String path, WebMethod wm){
         endPoints.put(path,wm);
     }
+
+    private static Map<String, String> queryParams(String query){
+        Map<String, String> params = new HashMap<>();
+        if(query == null || query.isEmpty()){
+            return params;
+        }
+        String[] tuples = query.split("&");
+        for (String tuple : tuples){
+            String[] keyAndValue = tuple.split("=");
+            if(keyAndValue.length == 2){
+                params.put(keyAndValue[0], keyAndValue[1]);
+            } else if(keyAndValue.length == 1){
+                params.put(keyAndValue[0], "");
+            }
+        }
+        return params;
+    }
 }

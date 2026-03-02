@@ -1,7 +1,15 @@
 package app;
 
+import java.util.Map;
+
 public class HttpRequest {
-    public String getValue(String varname){
-        return "default";
+    private Map<String, String> queryParams;
+    
+    public HttpRequest(Map<String, String> queryParams){
+        this.queryParams = queryParams;
+    }
+
+    public String getValues(String varname){
+        return queryParams.getOrDefault(varname, "default");
     }
 }
