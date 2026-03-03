@@ -1,8 +1,7 @@
 app\HttpResponse.class
-app\App.class
 app\EchoClient.class
 app\HttpServer.class
-app\examples\MathServices.class
+app\WebFramework.class
 app\HttpRequest.class
 app\WebMethod.class
 app\EchoServer.class
