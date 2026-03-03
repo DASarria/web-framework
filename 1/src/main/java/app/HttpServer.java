@@ -10,17 +10,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-
-import app.WebMethod;
+import java.io.InputStream;        
+import java.nio.charset.StandardCharsets;
 
 public class HttpServer {
     static Map<String, WebMethod> endPoints = new HashMap<>();
+    static String staticFilesPath = "";
     public static void main(String[] args) throws IOException, URISyntaxException {
         ServerSocket serverSocket = null;
         try {
-            serverSocket = new ServerSocket(35000);
+            serverSocket = new ServerSocket(8080);
         } catch (IOException e) {
-            System.err.println("Could not listen on port: 35000.");
+            System.err.println("Could not listen on port: 8080.");
             System.exit(1);
         }
         Socket clientSocket = null;
@@ -79,7 +80,7 @@ public class HttpServer {
                         + "<html>"
                         + "<head>"
                         + "<meta charset=\"UTF-8\">"
-                        + "<title>PI</title>\n"
+                        + "<title>Response</title>\n"
                         + "</head>"
                         + "<body>"
                         + wm.execute(req, res)
@@ -88,22 +89,34 @@ public class HttpServer {
                 out.println(outputLine);
 
             } else {
-                outputLine = "HTTP/1.1 200 OK\n\r"
+                String fileContent = readStaticFile(reqPath);
+                if(fileContent != null){
+                    String contentType = getContentType(reqPath);
+                    outputLine = "HTTP/1.1 200 OK\n\r"
+                            + "Content-Type:" + contentType + "\n\r"
+                            + "\n\r"
+                            + fileContent;
+                    out.println(outputLine);
+
+                }else{
+
+                outputLine = "HTTP/1.1 404 Not Found\n\r"
                         + "Content-Type:text/html\n\r"
                         + "\n\r"
                         + "<!DOCTYPE html>"
                         + "<html>"
                         + "<head>"
                         + "<meta charset=\"UTF-8\">"
-                        + "<title>Title of the document</title>\n"
+                        + "<title>404 Not Found</title>\n"
                         + "</head>"
                         + "<body>"
-                        + "My Web Site"
+                        + "<h1>404 Not Found</h1>"
+                        + "The requested resource was not found on this server."
                         + "</body>"
                         + "</html>";
                 out.println(outputLine);
+                }
             }
-
             out.close();
             in.close();
             clientSocket.close();
@@ -113,6 +126,10 @@ public class HttpServer {
 
     public static void get(String path, WebMethod wm){
         endPoints.put(path,wm);
+    }
+
+    public static void staticfiles(String path){
+        staticFilesPath = path;
     }
 
     private static Map<String, String> queryParams(String query){
@@ -131,4 +148,42 @@ public class HttpServer {
         }
         return params;
     }
+
+    private static String getContentType(String file){
+        if(file.endsWith(".html")){
+            return "text/html";
+        } else if(file.endsWith(".css")){
+            return "text/css";
+        } else if(file.endsWith(".png")){
+            return "image/png";
+        } else if(file.endsWith(".jpg") || file.endsWith(".jpeg")){
+            return "image/jpeg";
+        } else {
+            return "text/plain";
+        }
+    }
+
+    private static String readStaticFile(String filePath){
+        try{
+            String fullPath = staticFilesPath + filePath;
+            InputStream inputStream = HttpServer.class.getResourceAsStream(fullPath);
+            if(inputStream == null){
+                return null;
+            }
+            StringBuilder content = new StringBuilder();
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))){
+                String line;
+                while((line = reader.readLine()) != null){
+                    content.append(line).append("\n");
+                }
+            }
+            return content.toString();
+        } catch (IOException e){
+            System.err.println("Error reading file: " + filePath);
+            return null;
+        }
+    }
+
+
+
 }

@@ -1,13 +1,9 @@
-app\AppConfig$JerseyConfig.class
 app\HttpResponse.class
 app\App.class
+app\EchoClient.class
+app\HttpServer.class
 app\examples\MathServices.class
 app\HttpRequest.class
 app\WebMethod.class
 app\EchoServer.class
-app\AppConfig$JacksonMessagePackProvider.class
-app\EchoClient.class
-app\CalcEndpoint.class
-app\CalcEndpoint$Result.class
 app\URLReader.class
-app\AppConfig.class
